@@ -21,10 +21,10 @@ automation:
         entity_id: binary_sensor.workday_sensor
         state: "on"  # Bara på arbetsdagar
     action:
-      - service: notify.mobile_app_min_telefon
-        data:
-          title: "🍽️ Dagens meny på Gånghesterskolan"
-          message: "{{ states('sensor.min_skola_meny_idag') }}"
+       - service: notify.mobile_app_min_telefon
+         data:
+           title: "🍽️ Dagens meny"
+           message: "{{ states('sensor.min_skola_meny_idag') }}"
           data:
             channel: "meals"
             priority: "high"
@@ -81,9 +81,9 @@ automation:
       - service: logbook.log
         data:
           name: "Matmenyer"
-          message: |
-            Gånghesterskolan:
-            {{ states('sensor.min_skola_meny_idag') }}
+           message: |
+             Min Skola:
+             {{ states('sensor.min_skola_meny_idag') }}
 ```
 
 ## Templates
@@ -104,11 +104,11 @@ automation:
 ### Kombinera flera skolor
 
 ```jinja2
-**Gånghesterskolan:**
+**Min Skola 1:**
 {{ states('sensor.min_skola_meny_idag') }}
 
-**Skogsgläntans förskola:**
-{{ states('sensor.min_skola_meny_idag') }}
+**Min Skola 2:**
+{{ states('sensor.min_skola2_meny_idag') }}
 ```
 
 ### Visa senaste uppdateringstid

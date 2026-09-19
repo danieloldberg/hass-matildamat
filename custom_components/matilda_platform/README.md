@@ -1,5 +1,7 @@
 # Matilda Platform Integration
 
+> **⚠️ AI-Generated** — This integration was created by an AI assistant. It works, but is new and untested in production. Report issues on GitHub.
+
 En Home Assistant custom integration för att läsa matmenyer från Matilda Platform för svenska förskolor och skolor.
 
 ## Funktioner

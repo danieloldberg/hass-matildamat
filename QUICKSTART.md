@@ -1,5 +1,7 @@
 # Quick Start Guide
 
+> **⚠️ AI-Generated Integration** — This integration was created by an AI assistant. It's functional and tested, but is brand new. If you encounter issues, please report them on GitHub.
+
 ## Installation (5 minuter)
 
 ### 1. Lägg till Custom Repository i HACS
