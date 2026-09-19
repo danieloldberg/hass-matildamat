@@ -1,0 +1,26 @@
+{
+  "config": {
+    "flow_title": "Matilda Platform",
+    "step": {
+      "user": {
+        "title": "Select School",
+        "description": "Select a school from the list. Total {distributors_count} schools available.",
+        "data": {
+          "distributor_id": "School",
+          "distributor_name": "School Name"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This school is already configured",
+      "cannot_connect": "Could not connect to Matilda Platform API"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "matilda_platform_menu": {
+        "name": "Menu"
+      }
+    }
+  }
+}

@@ -1,0 +1,246 @@
+# Matilda Platform Integration for Home Assistant
+
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![GitHub Release](https://img.shields.io/github/v/release/yourusername/matilda-platform-ha)](https://github.com/yourusername/matilda-platform-ha/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+En Home Assistant custom integration för att läsa matmenyer från **Matilda Platform** för svenska förskolor och skolor.
+
+## Om Matilda Platform
+
+Matilda Platform är ett digitalt meny- och måltidssystem som används av många svenska skolor och förskolor för att planera och dela information om måltider.
+
+## Features ✨
+
+- 📖 **Läser meny från Matilda Platform** - Visar dagens rätter från din förskola/skola
+- 🏫 **Välj från 3500+ institutioner** - Hämtar automatisk lista från API:t
+- 🔄 **Automatisk uppdatering** - Uppdateras varje timme + kl 00:00
+- 📢 **Tydliga meddelanden** - Visar "Ingen meny idag" när meny saknas
+- 🌐 **Svenska & engelska** - Fullt stöd för båda språken
+- 🔐 **SSL-säker** - Hanterar self-signed certificates från API:t
+- 📝 **Debug-loggning** - Enkel felsökning
+
+## Installation
+
+### Via HACS (Rekommenderat)
+
+1. Öppna **HACS** i Home Assistant
+2. Gå till **Integrations**
+3. Klicka **⋯** (tre prickar) → **Custom repositories**
+4. Lägg till:
+   ```
+   Repository: https://github.com/yourusername/matilda-platform-ha
+   Category: Integration
+   ```
+5. Klicka **Create**
+6. Sök efter **Matilda Platform**
+7. Klicka **Install**
+8. Starta om Home Assistant
+
+### Manuell installation
+
+1. Ladda ner den senaste releasen från [Releases](https://github.com/yourusername/matilda-platform-ha/releases)
+2. Packa upp `matilda_platform.zip`
+3. Kopiera mappen till:
+   ```
+   <config_directory>/custom_components/matilda_platform/
+   ```
+4. Starta om Home Assistant
+
+## Konfiguration
+
+### GUI Setup (Rekommenderat)
+
+1. Gå till **Settings → Devices & Services → Integrations**
+2. Klicka **Create Automation**
+3. Sök efter **Matilda Platform**
+4. Välj din institution från listan (3500+ val)
+5. Klicka **Submit**
+
+### YAML Setup (Om du föredrar det)
+
+Lägg till i `configuration.yaml`:
+
+```yaml
+matilda_platform:
+  - name: "Min Förskola"
+    distributor_id: "68d18b0e30b565aba61bf59e"
+```
+
+## Användning
+
+### Entity
+
+Efter installation skapas en sensor:
+
+```
+sensor.<institution_namn>_meny_idag
+```
+
+**State**: Visar dagens meny med en rad per rätt
+
+**Attributes**:
+- `distributor_id` - Institutionens ID
+- `distributor_name` - Institutionens namn
+- `last_update` - Senaste uppdateringstid
+
+### Exempel Output
+
+```
+• Stekta köttbullar med makaroner
+• Auberginegryta med bulgur & yoghurttopping
+```
+
+## Automations & Dashboards
+
+### Notifikation vid menyuppdatering
+
+```yaml
+automation:
+  - alias: "Skicka dagens meny till telefon"
+    trigger:
+      platform: time
+      at: "07:30:00"
+    condition:
+      condition: state
+      entity_id: sensor.min_skola_meny_idag
+      state_not: "Ingen meny idag"
+    action:
+      service: notify.mobile_app_din_telefon
+      data:
+        title: "Dagens meny"
+        message: "{{ states('sensor.min_skola_meny_idag') }}"
+```
+
+### Dashboard Markdown Card
+
+```yaml
+type: markdown
+title: "☕ Dagens Meny"
+content: |
+  **{{ now().strftime('%A') | capitalize }}**
+  
+  {{ states('sensor.min_skola_meny_idag') }}
+```
+
+### Custom:button-card
+
+```yaml
+type: custom:button-card
+entity: sensor.min_skola_meny_idag
+name: Dagens Meny
+show_state: true
+state_display: |
+  [[[
+    return entity.state;
+  ]]]
+```
+
+## Felsökning
+
+### Sensorn visas inte
+
+1. **Kontrollera installation:**
+   ```bash
+   ls -la <config>/custom_components/matilda_platform/
+   ```
+
+2. **Kolla logs:**
+   - **Settings → System → Logs**
+   - Sök efter `matilda_platform`
+
+3. **Lägg till debug-loggning:**
+   ```yaml
+   logger:
+     logs:
+       custom_components.matilda_platform: debug
+   ```
+
+### Sensorn visar "Kunde inte läsa in meny"
+
+Möjliga orsaker:
+- Ingen internetanslutning
+- Matilda Platform API är nere
+- Skolans ID är felaktigt
+
+Kolla logs för mer detaljer.
+
+### Sensorn uppdateras inte
+
+- Sensorn uppdateras varje timme automatiskt
+- Vid midnatt sker också en uppdatering
+- Tvinga uppdatering genom att starta om Home Assistant
+
+## Institutionens ID
+
+För att hitta ditt skolans/förskolans distributor ID:
+
+1. Gå till: https://menu.matildaplatform.com/api/distributors
+2. Sök efter ditt institution namn
+3. Kopiera `id`-värdet
+
+### Kända institutioner
+
+Du hittar alla 3500+ institutioner här:
+https://menu.matildaplatform.com/api/distributors
+
+För att hitta ditt skolans/förskolans distributor ID:
+
+## Utveckling
+
+### Lokal setup
+
+```bash
+git clone https://github.com/yourusername/matilda-platform-ha.git
+cd matilda-platform-ha
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements-dev.txt
+```
+
+### Testa API:n
+
+```bash
+python3 custom_components/matilda_platform/test_matilda.py
+```
+
+### Validera HACS krav
+
+```bash
+hacs-cli validate
+```
+
+## Bidrag
+
+Bidrag är välkomna! Vänligen:
+
+1. Forka repositoriet
+2. Skapa en feature branch (`git checkout -b feature/AmazingFeature`)
+3. Committa dina ändringar (`git commit -m 'Add some AmazingFeature'`)
+4. Pusha till branchen (`git push origin feature/AmazingFeature`)
+5. Öppna en Pull Request
+
+## Issues
+
+Har du hittat ett fel eller har ett förslag? 
+[Öppna en issue](https://github.com/yourusername/matilda-platform-ha/issues)
+
+## Licens
+
+Denna projektet är licensierat under MIT License - se [LICENSE](LICENSE) filen för detaljer.
+
+## Support
+
+För support och frågor:
+- 📧 Skapa en [GitHub Issue](https://github.com/yourusername/matilda-platform-ha/issues)
+- 💬 Diskutera på [Home Assistant Community](https://community.home-assistant.io)
+
+## Credits
+
+- Matilda Platform API - https://menu.matildaplatform.com/api
+- Home Assistant - https://www.home-assistant.io
+- HACS - https://hacs.xyz
+
+---
+
+**Notering:** Detta är en inofficiell integrationsmodul. Denna projektet är inte godkänd eller stödd av Matilda Platform.

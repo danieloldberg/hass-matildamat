@@ -1,0 +1,42 @@
+name: Feature Request
+description: Föreslå en ny feature
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tack för att du föreslår en ny feature! Beskriv din idé nedan.
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Beskriv funktionen
+      description: En tydlig beskrivning av vad du vill lägga till
+      placeholder: "Jag vill kunna..."
+    validations:
+      required: true
+  
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Varför behövs denna feature?
+      description: Förklara varför detta skulle vara användbart
+    validations:
+      required: true
+  
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativa lösningar
+      description: Har du tänkt på andra sätt att lösa detta?
+    validations:
+      required: false
+  
+  - type: textarea
+    id: additional
+    attributes:
+      label: Ytterligare kontext
+      description: Något annat relevant information?
+    validations:
+      required: false

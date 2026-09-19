@@ -1,0 +1,65 @@
+name: Bug Report
+description: Rapportera ett fel/bug
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tack för att du rapporterar ett fel! Fyll i informationen nedan för att hjälpa oss att fixa det.
+  
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Vilken version av Matilda Platform integreringen använder du?
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant Version
+      description: Vilken version av Home Assistant kör du?
+      placeholder: "2024.1.0"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Beskriv buggen
+      description: En tydlig beskrivning av vad som inte fungerar
+      placeholder: "Sensorn visar..."
+    validations:
+      required: true
+  
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steg för att återskapa
+      description: Steg-för-steg instruktioner för att återskapa problemet
+      value: |
+        1. Gå till...
+        2. Klicka på...
+        3. Se felmeddelandet...
+    validations:
+      required: true
+  
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevanta logs
+      description: Lägg in relevanta logs från Home Assistant
+      render: shell
+    validations:
+      required: false
+  
+  - type: textarea
+    id: additional
+    attributes:
+      label: Ytterligare kontext
+      description: Något annat vi bör veta?
+    validations:
+      required: false

@@ -1,0 +1,26 @@
+{
+  "config": {
+    "flow_title": "Matilda Platform",
+    "step": {
+      "user": {
+        "title": "Välj skola",
+        "description": "Välj en skola från listan. Totalt {distributors_count} skolor är tillgängliga.",
+        "data": {
+          "distributor_id": "Skola",
+          "distributor_name": "Skolans namn"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Denna skola är redan konfigurerad",
+      "cannot_connect": "Kunde inte ansluta till Matilda Platform API"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "matilda_platform_menu": {
+        "name": "Meny"
+      }
+    }
+  }
+}
