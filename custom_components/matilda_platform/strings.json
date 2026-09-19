@@ -3,17 +3,27 @@
     "flow_title": "Matilda Platform",
     "step": {
       "user": {
-        "title": "Välj skola",
-        "description": "Välj en skola från listan. Totalt {distributors_count} skolor är tillgängliga.",
+        "title": "Sök efter skola/förskola",
+        "description": "{info}",
         "data": {
-          "distributor_id": "Skola",
-          "distributor_name": "Skolans namn"
+          "search_query": "Skolans namn"
+        }
+      },
+      "select_school": {
+        "title": "Välj skola/förskola",
+        "description": "Hittade {count} skola(or). Välj din institution:",
+        "data": {
+          "distributor_id": "Skola/Förskola"
         }
       }
     },
     "abort": {
       "already_configured": "Denna skola är redan konfigurerad",
-      "cannot_connect": "Kunde inte ansluta till Matilda Platform API"
+      "cannot_connect": "Kunde inte ansluta till Matilda Platform API",
+      "no_results": "Ingen skola hittad. Försök med annat namn.",
+      "no_schools_found": "Inga skolor tillgängliga",
+      "selection_failed": "Kunde inte välja skola",
+      "import_failed": "Kunde inte importera konfiguration"
     }
   },
   "entity": {

@@ -66,10 +66,16 @@ Matilda Platform är ett digitalt meny- och måltidssystem som används av mång
 ### GUI Setup (Rekommenderat)
 
 1. Gå till **Settings → Devices & Services → Integrations**
-2. Klicka **Create Automation**
+2. Klicka **Create Integration**
 3. Sök efter **Matilda Platform**
-4. Välj din institution från listan (3500+ val)
-5. Klicka **Submit**
+4. Skriv skolans/förskolans namn (söker bland 3500+ institutioner)
+   - Exempel: "Björkstaden" eller "Montessori"
+   - Eller bara första bokstäverna
+5. Välj din institution från resultaten (sorterade alfabetiskt)
+   - Visar namn och stad
+6. Klicka **Submit**
+
+**Det är klart!** Sensorn är nu konfigurerad.
 
 ### YAML Setup (Om du föredrar det)
 
@@ -77,9 +83,11 @@ Lägg till i `configuration.yaml`:
 
 ```yaml
 matilda_platform:
-  - name: "Min Förskola"
-    distributor_id: "68d18b0e30b565aba61bf59e"
+  - distributor_id: "68d18b0e30b565aba61bf59e"
 ```
+
+> Du hittar distributor_id genom att söka i listan här:
+> https://menu.matildaplatform.com/api/distributors
 
 ## Användning
 

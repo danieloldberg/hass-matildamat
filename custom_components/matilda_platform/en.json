@@ -3,17 +3,27 @@
     "flow_title": "Matilda Platform",
     "step": {
       "user": {
-        "title": "Select School",
-        "description": "Select a school from the list. Total {distributors_count} schools available.",
+        "title": "Search for School",
+        "description": "{info}",
         "data": {
-          "distributor_id": "School",
-          "distributor_name": "School Name"
+          "search_query": "School Name"
+        }
+      },
+      "select_school": {
+        "title": "Select School",
+        "description": "Found {count} school(s). Choose your institution:",
+        "data": {
+          "distributor_id": "School"
         }
       }
     },
     "abort": {
       "already_configured": "This school is already configured",
-      "cannot_connect": "Could not connect to Matilda Platform API"
+      "cannot_connect": "Could not connect to Matilda Platform API",
+      "no_results": "No school found. Try another name.",
+      "no_schools_found": "No schools available",
+      "selection_failed": "Could not select school",
+      "import_failed": "Could not import configuration"
     }
   },
   "entity": {

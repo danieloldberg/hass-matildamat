@@ -29,8 +29,10 @@ https://github.com/yourusername/matilda-platform-ha
 1. Settings → Devices & Services → Integrations
 2. Klick **Create**
 3. Sök: "Matilda Platform"
-4. Välj din skola från listan
-5. Klick **Submit**
+4. Skriv ditt skolans namn eller början av det
+   - Exempel: "Björk" eller "Montessori"
+5. Välj från resultaten
+6. Klick **Submit**
 
 **Det är klart!** 🎉
 
