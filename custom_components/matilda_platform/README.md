@@ -38,44 +38,103 @@ Gå till **Settings → System → Restart Home Assistant**
 
 ## Hur den fungerar
 
-Integrationen skapar en sensor för varje skola du lägger till:
+Integrationen skapar sensorer för varje skola du lägger till:
 
+**Summary Sensor:**
 - **Sensor ID:** `sensor.<skolnamn>_meny_idag`
-- **State:** Visar dagens meny med en rad per rätt
-- **Uppdateringsfrekvens:** Varje timme, plus automatisk uppdatering kl 00:00
+- **State:** Alla måltider för dagen
+- **Attribut:** Komplett JSON-struktur med alla måltider och rätter
+
+**Individual Meal Sensors (en per måltid):**
+- **Sensor ID:** `sensor.<skolnamn>_<maaltid>` (t.ex. `sensor.<skolnamn>_lunch`)
+- **State:** Rätter för denna måltid
+- **Attribut:** Måltidsnamn, rättlista, mm
+
+**Uppdateringsfrekvens:** Varje timme, plus automatisk uppdatering kl 00:00
 
 ### Exempel på output
 
+**Summary sensor state:**
 ```
-• Stekta köttbullar med makaroner
-• Auberginegryta med bulgur & yoghurttopping
+**Frukost:**
+• Müsli
+• Frukt
+
+**Lunch:**
+• Stekta köttbullar
+• Potatis
+
+**Mellanmål:**
+• Frukt
+```
+
+**Individual sensor state (lunch):**
+```
+• Stekta köttbullar
+• Potatis
 ```
 
 ## Användarscenarios
 
-### Automation: Skicka meny via notifikation
+### Automation: Skicka all info på morgonen
 
 ```yaml
 automation:
-  - alias: "Send menu to Telegram"
+  - alias: "Send full menu to Telegram"
     trigger:
       platform: time
       at: "07:00:00"
     action:
       service: notify.telegram
       data:
-        message: "Dagens meny:\n{{ state_attr('sensor.min_skola_meny_idag', 'native_value') }}"
+        message: "{{ states('sensor.min_skola_meny_idag') }}"
 ```
 
-### Dashboard: Visa meny
+### Automation: Avisering vid specifik rätt
 
-Lägg till en Markdown-card på din dashboard:
+```yaml
+automation:
+  - alias: "Alert if nuts on menu"
+    trigger:
+      platform: state
+      entity_id: sensor.min_skola_lunch
+    condition:
+      - condition: template
+        value_template: "{{ 'Nötter' in state_attr('sensor.min_skola_lunch', 'courses') | default([]) }}"
+    action:
+      service: notify.telegram
+      data:
+        message: "⚠️ Nötter serveras på lunch idag!"
+```
+
+### Dashboard: Komplett överblick
+
+Lägg till Summary-sensorn för all info:
 
 ```yaml
 type: markdown
 content: |
   ## Dagens meny
-  {{ state_attr('sensor.min_skola_meny_idag', 'native_value') }}
+  {{ states('sensor.min_skola_meny_idag') }}
+```
+
+### Dashboard: Separata kort för varje måltid
+
+```yaml
+type: grid
+columns: 3
+cards:
+  - type: markdown
+    title: "☕ Frukost"
+    content: "{{ states('sensor.min_skola_frukost') | default('Ingen meny') }}"
+  
+  - type: markdown
+    title: "🍽️ Lunch"
+    content: "{{ states('sensor.min_skola_lunch') | default('Ingen meny') }}"
+  
+  - type: markdown
+    title: "🍪 Mellanmål"
+    content: "{{ states('sensor.min_skola_mellanmal') | default('Ingen meny') }}"
 ```
 
 ## Felsökning

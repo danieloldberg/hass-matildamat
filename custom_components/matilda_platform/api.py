@@ -99,7 +99,7 @@ class MatildaPlatformAPI:
             )
             return {}
 
-    def parse_menu(self, api_response: dict[str, Any]) -> str:
+    def parse_menu(self, api_response: dict[str, Any]) -> dict[str, Any]:
         """
         Parse menu data from API response.
 
@@ -107,31 +107,46 @@ class MatildaPlatformAPI:
             api_response: Raw API response
 
         Returns:
-            Formatted menu string
+            Dictionary with meal structure:
+            {
+                "meals": [
+                    {
+                        "name": "Frukost",
+                        "courses": ["Müsli", "Frukt"]
+                    },
+                    ...
+                ]
+            }
         """
         meals = api_response.get("meals", [])
 
         if not meals:
-            return "Ingen meny idag"
+            return {"meals": []}
 
-        # Get first meal of the day
-        first_meal = meals[0]
-        courses = first_meal.get("courses", [])
+        # Parse all meals with their courses
+        parsed_meals = []
+        for meal in meals:
+            meal_name = meal.get("name", "").strip()
+            courses = meal.get("courses", [])
 
-        if not courses:
-            return "Ingen meny idag"
+            if not meal_name or not courses:
+                continue
 
-        # Build menu text from all courses
-        menu_items = []
-        for course in courses:
-            course_name = course.get("name", "").strip()
-            if course_name:
-                menu_items.append(f"• {course_name}")
+            # Extract course names
+            course_names = []
+            for course in courses:
+                course_name = course.get("name", "").strip()
+                if course_name:
+                    course_names.append(course_name)
 
-        if not menu_items:
-            return "Ingen meny idag"
+            if course_names:
+                parsed_meals.append({
+                    "name": meal_name,
+                    "courses": course_names,
+                })
 
-        return "\n".join(menu_items)
+        return {"meals": parsed_meals}
+
 
 
 async def get_api_client(session: aiohttp.ClientSession) -> MatildaPlatformAPI:

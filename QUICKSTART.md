@@ -50,7 +50,7 @@ En sensor har skapats: `sensor.<skolnamn>_meny_idag`
 
 **Template:**
 ```jinja2
-{{ states('sensor.min_skola_meny_idag') }}
+{{ states('sensor.min_skola_meny_idag (summary) eller sensor.min_skola_lunch (individual)') }}
 ```
 
 **Output:**
@@ -73,7 +73,7 @@ automation:
       service: notify.mobile_app_din_telefon
       data:
         title: "Dagens meny"
-        message: "{{ states('sensor.min_skola_meny_idag') }}"
+        message: "{{ states('sensor.min_skola_meny_idag (summary) eller sensor.min_skola_lunch (individual)') }}"
 ```
 
 ### Lägg till på dashboard
@@ -83,7 +83,7 @@ automation:
 type: markdown
 title: "☕ Dagens Meny"
 content: |
-  {{ states('sensor.min_skola_meny_idag') }}
+  {{ states('sensor.min_skola_meny_idag (summary) eller sensor.min_skola_lunch (individual)') }}
 ```
 
 ## Felsökning

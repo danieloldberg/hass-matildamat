@@ -91,31 +91,70 @@ matilda_platform:
 
 ## Användning
 
-### Entity
+### Entities
 
-Efter installation skapas en sensor:
+Efter installation skapas **två typer av sensors:**
 
-```
-sensor.<institution_namn>_meny_idag
-```
-
-**State**: Visar dagens meny med en rad per rätt
-
-**Attributes**:
-- `distributor_id` - Institutionens ID
-- `distributor_name` - Institutionens namn
-- `last_update` - Senaste uppdateringstid
-
-### Exempel Output
+#### 1. Summary Sensor (Sammanfattning)
 
 ```
-• Stekta köttbullar med makaroner
-• Auberginegryta med bulgur & yoghurttopping
+sensor.min_skola_meny_idag
 ```
+
+- **State**: Alla måltider för dagen i ett kortfattat format
+- **Attributes**:
+  - `meals` - Komplett struktur med alla måltider och rätter (JSON)
+  - `meal_count` - Antal måltider idag
+  - `distributor_id`, `distributor_name`, `last_update`
+
+**Exempel state:**
+```
+**Frukost:**
+• Müsli
+• Frukt
+
+**Lunch:**
+• Stekta köttbullar
+• Potatis
+• Bönor
+
+**Mellanmål:**
+• Frukt
+• Mjölk
+```
+
+#### 2. Individual Meal Sensors (En sensor per måltid)
+
+```
+sensor.min_skola_frukost
+sensor.min_skola_lunch
+sensor.min_skola_mellanmal
+...
+```
+
+- **State**: Endast rätter för denna måltid
+- **Attributes**:
+  - `courses` - Lista av rätter för denna måltid
+  - `meal_name` - Namnet på måltiden
+  - `distributor_id`, `distributor_name`, `last_update`
+
+**Exempel state för lunch:**
+```
+• Stekta köttbullar
+• Potatis
+• Bönor
+```
+
+### Varför två sensortyper?
+
+- 🎯 **Summary** - Perfekt för dashboard-överblick eller notifikationer med all info
+- 🎯 **Individual** - Perfekt för specifika automations eller att visa enskild måltid
+- 🎯 **Flexibel** - Använd bara de du behöver
+- 🎯 **API-access** - Summary sensor innehåller komplett JSON-struktur i attribut för avancerade automations
 
 ## Automations & Dashboards
 
-### Notifikation vid menyuppdatering
+### 1. Notifikation med all info (Summary)
 
 ```yaml
 automation:
@@ -123,10 +162,6 @@ automation:
     trigger:
       platform: time
       at: "07:30:00"
-    condition:
-      condition: state
-      entity_id: sensor.min_skola_meny_idag
-      state_not: "Ingen meny idag"
     action:
       service: notify.mobile_app_din_telefon
       data:
@@ -134,28 +169,88 @@ automation:
         message: "{{ states('sensor.min_skola_meny_idag') }}"
 ```
 
-### Dashboard Markdown Card
+### 2. Notifikation för specifik måltid (Individual)
+
+```yaml
+automation:
+  - alias: "Skicka lunch till mobil"
+    trigger:
+      platform: time
+      at: "10:30:00"
+    condition:
+      - condition: state
+        entity_id: sensor.min_skola_lunch
+        state_not: "Ingen meny idag"
+    action:
+      service: notify.mobile_app_din_telefon
+      data:
+        title: "Lunch idag"
+        message: "{{ states('sensor.min_skola_lunch') }}"
+```
+
+### 3. Trigger vid specifik rätt (Allergi-avisering)
+
+```yaml
+automation:
+  - alias: "Avisering: Mjölk på menyn"
+    trigger:
+      platform: state
+      entity_id: sensor.min_skola_lunch
+    condition:
+      - condition: template
+        value_template: "{{ 'Mjölk' in state_attr('sensor.min_skola_lunch', 'courses') | default([]) }}"
+    action:
+      service: notify.mobile_app_din_telefon
+      data:
+        title: "⚠️ Allergi-avisering"
+        message: "Mjölk serveras på lunch idag"
+```
+
+### 4. Dashboard - Enkel överblick
 
 ```yaml
 type: markdown
-title: "☕ Dagens Meny"
+title: "🍽️ Dagens Meny"
 content: |
-  **{{ now().strftime('%A') | capitalize }}**
-  
   {{ states('sensor.min_skola_meny_idag') }}
 ```
 
-### Custom:button-card
+### 5. Dashboard - Separata måltider
 
 ```yaml
-type: custom:button-card
-entity: sensor.min_skola_meny_idag
-name: Dagens Meny
-show_state: true
-state_display: |
-  [[[
-    return entity.state;
-  ]]]
+type: grid
+columns: 3
+cards:
+  - type: markdown
+    title: "☕ Frukost"
+    content: |
+      {{ states('sensor.min_skola_frukost') | default('Ingen meny') }}
+  
+  - type: markdown
+    title: "🍽️ Lunch"
+    content: |
+      {{ states('sensor.min_skola_lunch') | default('Ingen meny') }}
+  
+  - type: markdown
+    title: "🍪 Mellanmål"
+    content: |
+      {{ states('sensor.min_skola_mellanmal') | default('Ingen meny') }}
+```
+
+### 6. Dashboard - Entities kort
+
+```yaml
+type: entities
+title: "Matmenyer"
+entities:
+  - entity: sensor.min_skola_meny_idag
+    name: "Alla måltider"
+  - entity: sensor.min_skola_frukost
+    name: "Frukost"
+  - entity: sensor.min_skola_lunch
+    name: "Lunch"
+  - entity: sensor.min_skola_mellanmal
+    name: "Mellanmål"
 ```
 
 ## Felsökning
